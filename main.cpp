@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QList>
 #include <QString>
+#include <QSettings>
 
 using namespace std;
 
@@ -29,17 +30,30 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     cout<<"Hello QT"<<endl;
-    Serial ser;
-    ser.j=7;
+//    Serial ser;
+//    ser.j=7;
     cout<<"after sp"<<endl;
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
             QString qs=info.portName();
             cout<<qs.toStdString();
     }
-//    QSerialPortInfo as;
-//    as.availablePorts();
-    QList<int> ports;
-//    ports=QSerialPortInfo::availablePorts();
 
+    QSettings conf("E:/Projects/QT/HW/config.ini",QSettings::IniFormat);
+    conf.sync();
+    const QStringList sections=conf.childGroups();
+    foreach(const QString &section,sections)
+    {
+//        QString sec=section.childGroups();
+        cout<<section.toStdString()<<endl;
+    }
+
+    int size=sections.size();
+    cout<<"size="<<size<<endl;
+    for(int i=0;i<size;i++)
+    {
+        cout<<"section"<<i<<" is "<<sections[i].toStdString()<<endl;
+    }
+//    QString app = QApplication::applicationDirPath();
+//    cout<<app.toStdString();
     return a.exec();
 }
