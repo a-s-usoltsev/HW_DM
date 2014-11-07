@@ -9,6 +9,7 @@
 #include <QList>
 #include <QString>
 #include <QSettings>
+#include <QFile>
 
 using namespace std;
 
@@ -47,12 +48,30 @@ int main(int argc, char *argv[])
         cout<<section.toStdString()<<endl;
     }
 
-    int size=sections.size();
-    cout<<"size="<<size<<endl;
-    for(int i=0;i<size;i++)
+    conf.beginGroup("files");
+    const QStringList files=conf.childKeys();
+    foreach(const QString &punkt,files)
     {
-        cout<<"section"<<i<<" is "<<sections[i].toStdString()<<endl;
+        cout<<punkt.toStdString()<<endl;
+        cout<<conf.value(punkt).toString().toStdString()<<endl;
+        QFile *file=new QFile(conf.value(punkt).toString());
+        if(file->open(QFile::ReadWrite)){
+            cout<<"opaned"<<endl;
+        }
+        file->close();
     }
+//    int size=sections.size();
+//    cout<<"size="<<size<<endl;
+//    for(int i=0;i<size;i++)
+//    {
+//        cout<<"section"<<i<<" is "<<sections[i].toStdString()<<endl;
+//    }
+    const QStringList subsection=conf.allKeys();
+    foreach(const QString &punkt,subsection)
+    {
+        cout<<punkt.toStdString()<<endl;
+    }
+
 //    QString app = QApplication::applicationDirPath();
 //    cout<<app.toStdString();
     return a.exec();
