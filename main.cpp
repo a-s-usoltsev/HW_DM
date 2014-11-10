@@ -10,13 +10,17 @@
 #include <QString>
 #include <QSettings>
 #include <QFile>
+#include <QCryptographicHash>
 
 using namespace std;
 
 class Serial{
 public:
     int j;
+//    QSerialPort COM;
     Serial();
+    QList<QSerialPortInfo> availableCOM();
+    void newserial(const QSerialPortInfo &portname, QSerialPort *COM);
 };
 Serial::Serial(){
 
@@ -24,6 +28,19 @@ Serial::Serial(){
     QMessageBox Msg;
     Msg.setText("Constructor executed");
     Msg.exec();
+}
+
+QList<QSerialPortInfo> Serial::availableCOM(){
+    return QSerialPortInfo::availablePorts();
+}
+
+void Serial::newserial(const QSerialPortInfo &portname,QSerialPort* COM)
+{
+    COM->setPort(portname);
+    COM->open(QIODevice::ReadWrite);
+    COM->setBaudRate(2400);
+    COM->setDataBits(8);
+    COM->setParity(QSerialPort::NoParity)
 }
 
 int main(int argc, char *argv[])
@@ -58,14 +75,18 @@ int main(int argc, char *argv[])
         if(file->open(QFile::ReadWrite)){
             cout<<"opaned"<<endl;
         }
+        QByteArray income=file->readAll();
+        QByteArray hash=QCryptographicHash::hash(income,QCryptographicHash::Md5);
+        cout<<"hash:"<<endl;
+        QByteArray hash_hex=hash.toHex();
+        for(int i=0;i<hash_hex.size();i++){
+            cout<<hash_hex[i];
+        }
+        cout<<endl<<"hash end"<<endl;
         file->close();
+        delete file;
     }
-//    int size=sections.size();
-//    cout<<"size="<<size<<endl;
-//    for(int i=0;i<size;i++)
-//    {
-//        cout<<"section"<<i<<" is "<<sections[i].toStdString()<<endl;
-//    }
+
     const QStringList subsection=conf.allKeys();
     foreach(const QString &punkt,subsection)
     {
