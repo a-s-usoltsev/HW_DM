@@ -17,9 +17,11 @@ using namespace std;
 class Serial{
 public:
     int j;
+    static QList<QSerialPortInfo> com_ports_info;
+    QList<QSerialPort> com_ports;
 //    QSerialPort COM;
     Serial();
-    QList<QSerialPortInfo> availableCOM();
+    void update_com_list(QList<QSerialPortInfo> com_ports);
     void newserial(const QSerialPortInfo &portname, QSerialPort *COM);
 };
 Serial::Serial(){
@@ -30,8 +32,13 @@ Serial::Serial(){
     Msg.exec();
 }
 
-QList<QSerialPortInfo> Serial::availableCOM(){
-    return QSerialPortInfo::availablePorts();
+void Serial::update_com_list(QList<QSerialPortInfo> com_ports=com_ports_info){
+    com_ports.clear();
+    QList<QSerialPortInfo> info=QSerialPortInfo::availablePorts();
+    int size=info.size();
+    for(int i = 0;i<size;i++){
+        com_ports.insert(i,info[i]);
+    }
 }
 
 void Serial::newserial(const QSerialPortInfo &portname,QSerialPort* COM)
@@ -39,8 +46,8 @@ void Serial::newserial(const QSerialPortInfo &portname,QSerialPort* COM)
     COM->setPort(portname);
     COM->open(QIODevice::ReadWrite);
     COM->setBaudRate(2400);
-    COM->setDataBits(8);
-    COM->setParity(QSerialPort::NoParity)
+    COM->setDataBits(QSerialPort::Data8);
+    COM->setParity(QSerialPort::NoParity);
 }
 
 int main(int argc, char *argv[])
